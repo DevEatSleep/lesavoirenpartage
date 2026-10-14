@@ -1,5 +1,16 @@
 # Historique des versions
 
+## Non publié
+
+- Chaque mini-enquête affiche maintenant une réponse courte et sourcée (32 au total), révélée après la saisie d’une hypothèse. Chaque fait renvoie à l’article précis qui l’appuie.
+- Les textes de réponse sont en français uniquement ; la traduction anglais/espagnol reste à faire.
+- Le carnet affiche les pistes enregistrées (voir le correctif précédent).
+
+### Vérifications
+
+- Faits contrôlés un par un sur l’article Wikipédia cité (français, ou anglais quand l’article français ne contient pas le détail).
+- Longueurs des tableaux contrôlées par script (8 univers × 4 pistes). La compilation .NET et le test navigateur restent à effectuer : le SDK .NET n’est pas disponible dans l’environnement de préparation.
+
 ## 1.1.0 — 2026-10-13
 
 - Ajout de la licence PolyForm Noncommercial 1.0.0, du fichier NOTICE et des règles de contribution.

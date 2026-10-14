@@ -59,9 +59,6 @@
 .bet-choice{flex:1;padding:14px 18px;border:2px solid #d9dbd2;border-radius:12px;background:#fff;font:inherit;font-size:18px;font-weight:700;color:#152a42;cursor:pointer}
 .bet-choice:hover{border-color:#497d7d}
 .bet-choice-selected{background:#152a42;border-color:#152a42;color:#fff}
-.bet-range{width:100%;margin:10px 0 4px;accent-color:#497d7d}
-.bet-scale{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:13px;color:#5b6773;margin-bottom:18px}
-.bet-scale strong{font-size:22px;color:#152a42}
 .bet-confidence{font-weight:700;color:#497d7d}
 .learning-panel button[disabled]{opacity:.5;cursor:not-allowed}
 .calibration-total{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:26px 0 12px}
@@ -79,3 +76,4 @@
 .calibration-numbers{display:grid;grid-template-columns:1fr auto;gap:2px 12px;font-size:14px}
 .calibration-numbers span{color:#5b6773}
 @media(max-width:650px){.calibration-total{grid-template-columns:1fr}.bet-claim{font-size:19px}}
+.bet-label{margin:0 0 8px;font-weight:700;color:#152a42}

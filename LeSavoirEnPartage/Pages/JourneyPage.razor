@@ -1,0 +1,44 @@
+@page "/voyage/{Id}"
+@inject JourneyService Journeys
+@inject IJSRuntime JS
+@inject NavigationManager Nav
+<PageTitle>@(_journey?.Title ?? "Voyage") — Le Savoir en partage</PageTitle>
+@if (_journey is null)
+{
+    <section class="empty-state"><h1>Ce chemin reste à découvrir.</h1><a href="/">Retour à l’exploration</a></section>
+}
+else
+{
+    <section class="journey-detail">
+        <a class="back-link" href="/">← Tous les voyages</a>
+        <div class="detail-kicker"><span class="card-icon">@_journey.Icon</span><span>@_journey.Category</span><span class="source-chip">Sources documentaires</span></div>
+        <h1>@_journey.Title</h1><p class="detail-question">@_journey.Question</p><p class="detail-description">@_journey.Description</p>
+        <div class="detail-actions"><button class="button button-primary" @onclick="StartLearning">Lancer la découverte <span>↗</span></button><button class="button button-secondary" @onclick="ToggleSaved">@(_saved ? "✓ Dans mon carnet" : "+ Garder dans mon carnet")</button></div>
+        <div class="paths-heading"><div class="eyebrow">SUIVRE LES CONNEXIONS</div><h2>Quatre mini-enquêtes</h2><p>Choisis une piste pour creuser le sujet, te faire surprendre et trouver de nouvelles questions.</p></div>
+        <div class="path-list">
+            @for (var i=0;i<_journey.Paths.Length;i++)
+            {
+                var index = i;
+                <button class="path-row" @onclick="() => ExplorePath(index)"><span class="path-number">0@(i+1)</span><span class="path-content"><strong>@_journey.Paths[i]</strong><small>@_journey.PathQuestions[i]</small></span><span class="path-arrow">↗</span></button>
+            }
+        </div>
+        <div class="source-panel"><div class="source-panel-icon">↗</div><div><strong>Remonter aux sources</strong><p>Commence par l’article Wikipédia, puis croise les informations avec une ressource complémentaire indépendante. Les liens ouvrent les sites d’origine.</p><div class="source-links"><a href="@_journey.WikipediaUrl" target="_blank" rel="noopener noreferrer">Wikipédia — français ↗</a><a href="@_journey.EnglishUrl" target="_blank" rel="noopener noreferrer">Wikipedia — English ↗</a><a href="@_journey.SpanishUrl" target="_blank" rel="noopener noreferrer">Wikipedia — español ↗</a><a href="@_journey.SecondarySourceUrl" target="_blank" rel="noopener noreferrer">@_journey.SecondarySourceName ↗</a></div><p class="source-disclaimer">Pour les sujets controversés, les affirmations surprenantes ou les sujets de santé, cherche aussi des publications scientifiques, des organismes publics ou des spécialistes du domaine.</p></div></div>
+        @if (_learning)
+        {
+            <div class="learning-panel"><div class="eyebrow">PREMIÈRE ÉTAPE</div><h2>Avant de découvrir la réponse…</h2><p>@_journey.Question</p><p>Prends quelques secondes pour formuler ta propre hypothèse. L’apprentissage commence par ce que tu penses déjà savoir.</p><label for="hypothesis">Mon idée de départ</label><textarea id="hypothesis" @bind="_hypothesis" placeholder="Je pense que…"></textarea><button class="button button-primary" @onclick="ContinueLearning">Continuer mon exploration ↗</button>@if (_showNext){<p class="success-note">Belle première étape. Pour approfondir, consulte les sources puis explore une des connexions ci-dessus. Une réponse complète avec accompagnement IA sera ajoutée dans une prochaine version.</p>}</div>
+        }
+    </section>
+}
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender) { await JS.InvokeVoidAsync("lspTranslateUi"); }
+    [Parameter] public string Id { get; set; } = "";
+    private Journey? _journey;
+    private bool _saved, _learning, _showNext;
+    private string _hypothesis = "";
+    protected override async Task OnParametersSetAsync() { _journey = Journeys.Find(Id); if (_journey is not null) _saved = await JS.InvokeAsync<bool>("lspIsSaved", Id); }
+    private async Task ToggleSaved() { if (_journey is null) return; _saved = !_saved; await JS.InvokeVoidAsync("lspSave", Id, _saved); }
+    private void StartLearning() { _learning = true; _showNext = false; }
+    private void ContinueLearning() { _showNext = true; }
+    private void ExplorePath(int index) { if (_journey is null) return; Nav.NavigateTo($"/parcours/{_journey.Id}/{index}"); }
+    private string LocalizedUrl() => _journey?.WikipediaUrl ?? "https://www.wikipedia.org/";
+}

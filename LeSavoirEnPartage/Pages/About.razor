@@ -1,0 +1,14 @@
+@page "/apropos"
+@inject IJSRuntime JS
+<PageTitle>À propos — Le Savoir en partage</PageTitle>
+<section class="journey-detail sources-page">
+    <a class="back-link" href="/">← Retour aux univers</a>
+    <div class="eyebrow">UN PROJET INDÉPENDANT</div>
+    <h1>À propos du Voyageur du savoir</h1>
+    <p class="detail-description">Le Savoir en partage — Le Voyageur du savoir est un projet indépendant imaginé pour donner envie d’apprendre, d’explorer et de vérifier les informations.</p>
+    <div class="source-panel"><div class="source-panel-icon">✳</div><div><strong>Notre mission</strong><p>Transformer la curiosité en petits voyages : deviner, découvrir, puis remonter aux sources. L’application veut orienter les visiteurs vers les articles et les références, sans remplacer les encyclopédies, les spécialistes ni l’esprit critique.</p></div></div>
+    <div class="source-panel"><div class="source-panel-icon">W</div><div><strong>Un projet indépendant de Wikimedia</strong><p>Le Savoir en partage n’est ni développé, ni approuvé, ni sponsorisé par la Wikimedia Foundation ou Wikipédia. Les noms « Wikipédia » et « Wikimedia » désignent leurs projets et organisations respectifs. Les liens vers leurs sites sont proposés pour faciliter la vérification et soutenir, si chacun le souhaite, leurs activités.</p><p>Les dons sont effectués directement sur le site officiel de la Wikimedia Foundation. L’application ne collecte ni ne traite de paiement.</p><div class="source-links"><a href="https://www.wikimedia.org/" target="_blank" rel="noopener noreferrer">Site officiel de Wikimedia ↗</a><a href="https://donate.wikimedia.org/" target="_blank" rel="noopener noreferrer">Faire un don directement à Wikimedia ↗</a></div></div></div>
+    <div class="source-panel"><div class="source-panel-icon">⌘</div><div><strong>Code et contributions</strong><p>Le code est partagé sous la licence PolyForm Noncommercial 1.0.0 : les usages non commerciaux, les modifications et le partage sont autorisés dans les limites de cette licence. Les usages commerciaux ne sont pas autorisés sans permission distincte. Cette licence est une licence à usage non commercial, et non une licence open source approuvée par l’OSI.</p><p>Les contenus de Wikipédia et les médias externes restent soumis à leurs propres conditions de réutilisation. Voir la page Sources & licences et les fichiers LICENSE et CONTRIBUTING du dépôt.</p><a href="/sources">Consulter les sources et licences ↗</a></div></div>
+</section>
+
+@code { protected override async Task OnAfterRenderAsync(bool firstRender) { await JS.InvokeVoidAsync("lspTranslateUi"); } }

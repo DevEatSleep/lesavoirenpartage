@@ -1,0 +1,15 @@
+@inherits LayoutComponentBase
+<div class="app-shell">
+    <header class="topbar">
+        <a class="brand" href="/" aria-label="Le Savoir en partage - accueil"><span class="brand-mark">✳</span><span><strong>Le Savoir en partage</strong><small>LE VOYAGEUR DU SAVOIR</small></span></a>
+        <nav class="desktop-nav"><a href="/">Les univers</a><a href="/carte">Carte des découvertes</a><a href="/carnet">Mon carnet</a><a href="/sources">Sources & licences</a><a href="/apropos">À propos</a></nav>
+        <div class="language-wrap"><label for="language" data-lsp-key="language-label">Langue</label><select id="language" @onchange="ChangeLanguage"><option value="fr">FR</option><option value="en">EN</option><option value="es">ES</option></select></div>
+    </header>
+    <main>@Body</main>
+    <footer><span>La curiosité comme boussole. Les sources comme repères.</span><div class="footer-links"><a class="donate-link" href="https://donate.wikimedia.org/" target="_blank" rel="noopener noreferrer" aria-label="Faire un don à Wikipédia sur le site officiel de Wikimedia">♥ Faire un don à Wikipédia ↗</a><a href="/sources">Sources & licences</a><a href="/apropos">À propos</a><a href="https://www.wikimedia.org/" target="_blank" rel="noopener noreferrer">Découvrir Wikimedia ↗</a></div></footer>
+    <nav class="mobile-nav"><a href="/">⌕ <span>Univers</span></a><a href="/carte">✳ <span>Carte</span></a><a href="/carnet">▤ <span>Mon carnet</span></a></nav>
+</div>
+@code {
+    [Inject] private IJSRuntime JS { get; set; } = default!;
+    private async Task ChangeLanguage(ChangeEventArgs e) { await JS.InvokeVoidAsync("lspsetLanguage", e.Value?.ToString() ?? "fr"); }
+}

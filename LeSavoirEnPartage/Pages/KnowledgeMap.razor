@@ -1,0 +1,46 @@
+@page "/carte"
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+<PageTitle>Carte des découvertes — Le Voyageur du savoir</PageTitle>
+<section class="knowledge-map-page fun-map-page">
+    <a class="back-link" href="/">← Retour aux univers</a>
+    <div class="map-heading"><div><div class="eyebrow">TA CURIOSITÉ TRACE LA ROUTE</div><h1>La carte des découvertes</h1><p>Choisis un univers, ajoute-le à ton itinéraire, puis suis les liens vers une nouvelle surprise.</p></div><span class="map-count">8 univers · 8 connexions</span></div>
+    <div class="map-legend"><span><i class="legend-dot legend-main"></i>Univers à explorer</span><span class="map-hint">↗ Touche un cercle pour en savoir plus</span></div>
+    <div class="knowledge-map-shell"><svg class="knowledge-map-svg" viewBox="0 0 900 570" role="img" aria-label="Carte interactive des huit univers de découverte">
+        <defs><pattern id="mapDots" width="22" height="22" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="#d9ded8" /></pattern></defs><rect width="900" height="570" rx="18" fill="url(#mapDots)" />
+        @foreach (var link in Links){var a=Nodes.First(n=>n.Id==link.From);var b=Nodes.First(n=>n.Id==link.To);<line x1="@a.X" y1="@a.Y" x2="@b.X" y2="@b.Y" class="map-link @(SelectedId==a.Id || SelectedId==b.Id ? "map-link-active" : "") @(_journeyNodeIds.Contains(a.Id)&&_journeyNodeIds.Contains(b.Id)?"map-link-journey":"")" />}
+        @foreach (var node in Nodes){<g class="map-node map-node-main @(SelectedId==node.Id?"map-node-selected":"") @(_journeyNodeIds.Contains(node.Id)?"map-node-in-journey":"")" role="button" tabindex="0" aria-label="Explorer @node.Title" @onclick="() => SelectNode(node.Id)" @onkeydown="(e) => HandleKey(e,node.Id)"><circle cx="@node.X" cy="@node.Y" r="43"/><svg:text x="@node.X" y="@(node.Y+4)" class="map-node-icon">@node.Icon</svg:text><svg:text x="@node.X" y="@(node.Y+61)" class="map-node-label">@node.ShortTitle</svg:text>@if(_journeyNodeIds.Contains(node.Id)){<circle cx="@(node.X+32)" cy="@(node.Y-31)" r="10" class="map-journey-badge"/><svg:text x="@(node.X+32)" y="@(node.Y-27)" class="map-journey-badge-text">✓</svg:text>}</g>}
+    </svg></div>
+    <section class="personal-journey-panel"><div class="personal-journey-heading"><div><div class="eyebrow">TON ITINÉRAIRE PERSONNEL</div><h2>Mon carnet d’exploration</h2><p>Ajoute les univers qui t’attirent. Ton itinéraire est conservé sur cet appareil.</p></div><span class="journey-counter">@_journeyNodeIds.Count univers</span></div>
+        @if(_journeyNodeIds.Count==0){<div class="journey-empty"><span>⌁</span>Ton voyage commence ici. Sélectionne un univers sur la carte, puis ajoute-le à ton itinéraire.</div>}
+        else{<div class="personal-journey-list">@for(var i=0;i<_journeyNodeIds.Count;i++){var id=_journeyNodeIds[i];var n=Nodes.FirstOrDefault(x=>x.Id==id);if(n is not null){<div class="personal-journey-step"><button class="journey-step-open" @onclick="()=>SelectNode(n.Id)"><span class="journey-step-number">@(i+1)</span><span><strong>@n.Title</strong><small>@n.Description</small></span></button><button class="journey-step-remove" title="Retirer de mon voyage" @onclick="()=>RemoveFromJourney(n.Id)">×</button></div>}}</div><button class="text-button" @onclick="ClearJourney">Effacer mon itinéraire</button>}
+    </section>
+    @if(Selected is not null){<section class="map-detail" aria-live="polite"><div class="map-detail-symbol">@Selected.Icon</div><div class="map-detail-copy"><div class="eyebrow">UNIVERS À EXPLORER</div><h2>@Selected.Title</h2><p>@Selected.Description</p></div><div class="map-detail-actions"><button class="button button-primary" @onclick="()=>ToggleJourneyNode(Selected.Id)">@(_journeyNodeIds.Contains(Selected.Id)?"✓ Dans mon itinéraire · Retirer":"+ Ajouter à mon itinéraire")</button><button class="button button-secondary" @onclick="()=>OpenJourney(Selected.JourneyId)">Explorer cet univers ↗</button></div><div class="map-related"><strong>Pour varier les plaisirs</strong><div class="map-related-list">@foreach(var related in ConnectedNodes(Selected.Id)){<button class="related-node" @onclick="()=>SelectNode(related.Id)"><span>@related.Icon</span>@related.Title <b>↗</b></button>}</div></div></section>}
+    <p class="map-footnote">Les liens sont des suggestions éditoriales pour stimuler la curiosité ; ils ne prétendent pas établir de liens scientifiques entre les thèmes.</p>
+</section>
+@code {
+    private string SelectedId {get;set;}="mysteres";
+    private List<string> _journeyNodeIds=new();
+    private MapNode? Selected=>Nodes.FirstOrDefault(n=>n.Id==SelectedId);
+    protected override async Task OnAfterRenderAsync(bool firstRender){if(firstRender){_journeyNodeIds=(await JS.InvokeAsync<string[]>("lspGetJourneyNodes")).Where(id=>Nodes.Any(n=>n.Id==id)).ToList();StateHasChanged();} await JS.InvokeVoidAsync("lspTranslateUi");}
+    private void SelectNode(string id)=>SelectedId=id;
+    private void OpenJourney(string id)=>Nav.NavigateTo($"/voyage/{id}");
+    private void HandleKey(KeyboardEventArgs e,string id){if(e.Key is "Enter" or " ")SelectNode(id);}
+    private IEnumerable<MapNode> ConnectedNodes(string id)=>Links.Where(l=>l.From==id||l.To==id).Select(l=>Nodes.First(n=>n.Id==(l.From==id?l.To:l.From))).DistinctBy(n=>n.Id);
+    private async Task ToggleJourneyNode(string id){var add=!_journeyNodeIds.Contains(id);await JS.InvokeVoidAsync("lspJourneyNode",id,add);if(add)_journeyNodeIds.Add(id);else _journeyNodeIds.Remove(id);}
+    private async Task RemoveFromJourney(string id){await JS.InvokeVoidAsync("lspJourneyNode",id,false);_journeyNodeIds.Remove(id);}
+    private async Task ClearJourney(){await JS.InvokeVoidAsync("lspClearJourney");_journeyNodeIds.Clear();}
+    private sealed record MapNode(string Id,string Title,string ShortTitle,string Description,string Icon,int X,int Y,string JourneyId);
+    private sealed record MapLink(string From,string To);
+    private static readonly List<MapNode> Nodes=new(){
+        new("mysteres","Mystères & énigmes","Mystères","Enquête des indices, des légendes et des mystères non résolus.","🔎",450,95,"mysteres"),
+        new("popculture","Cinéma, séries & pop culture","Pop culture","Coulisses, scènes cultes et références cachées.","🎬",690,180,"popculture"),
+        new("jeux","Jeux de cerveau","Jeux de cerveau","Illusions, énigmes et biais qui piègent notre intuition.","🧠",690,385,"jeux"),
+        new("voyages","Voyages & cultures étonnantes","Voyages","Coutumes et fêtes étonnantes à travers le monde.","🌍",450,480,"voyages"),
+        new("animaux","Animaux extraordinaires","Animaux","Les incroyables capacités du monde vivant.","🐙",210,385,"animaux"),
+        new("inventions","Inventions folles & échecs célèbres","Inventions","Idées surprenantes, découvertes accidentelles et ratés.","💡",210,180,"inventions"),
+        new("vraioufaux","Incroyable… mais vrai ?","Vrai ou faux ?","Faits étonnants à tester avant d’y croire.","🧐",450,285,"vraioufaux"),
+        new("relations","Amour, relations & comportements","Relations","Les comportements humains avec nuance et curiosité.","💬",450,190,"relations")
+    };
+    private static readonly List<MapLink> Links=new(){new("mysteres","popculture"),new("popculture","jeux"),new("jeux","voyages"),new("voyages","animaux"),new("animaux","inventions"),new("inventions","mysteres"),new("mysteres","vraioufaux"),new("popculture","relations"),new("jeux","vraioufaux"),new("voyages","relations"),new("animaux","vraioufaux"),new("inventions","relations"),new("relations","vraioufaux"),new("vraioufaux","mysteres")};
+}

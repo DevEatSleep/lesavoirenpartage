@@ -1,0 +1,19 @@
+@page "/carnet"
+@inject JourneyService Journeys
+@inject IJSRuntime JS
+<PageTitle>Mon carnet — Le Savoir en partage</PageTitle>
+<section class="notebook-page"><a class="back-link" href="/">← Explorer</a><div class="eyebrow">MES DÉCOUVERTES</div><h1>Mon carnet de voyage.</h1><p class="detail-description">Les idées que tu choisis de garder, les pistes que tu veux retrouver.</p>
+@if (_items.Count == 0)
+{
+    <div class="empty-notebook"><span>▤</span><h2>Ton carnet commence ici.</h2><p>Explore un sujet et enregistre les découvertes que tu souhaites approfondir.</p><a class="button button-primary" href="/">Trouver un premier voyage ↗</a></div>
+}
+else
+{
+    <div class="notebook-list">@foreach(var item in _items){<article class="notebook-item"><div><span class="card-category">@item.Category</span><h3>@item.Title</h3><p>@item.Question</p></div><a class="button button-secondary" href="/voyage/@item.Id">Reprendre ↗</a><button class="remove-button" title="Retirer du carnet" @onclick="() => Remove(item.Id)">×</button></article>}</div>
+}
+</section>
+@code {
+    private List<Journey> _items = new();
+    protected override async Task OnAfterRenderAsync(bool firstRender) { if (firstRender) { var ids = await JS.InvokeAsync<string[]>("lspGetSaved"); _items = ids.Select(Journeys.Find).Where(j => j is not null).Cast<Journey>().ToList(); StateHasChanged(); } await JS.InvokeVoidAsync("lspTranslateUi"); }
+    private async Task Remove(string id) { await JS.InvokeVoidAsync("lspSave", id, false); _items.RemoveAll(x => x.Id == id); }
+}

@@ -9,12 +9,12 @@
 }
 else
 {
-    <div class="notebook-list">@foreach(var item in _items){<article class="notebook-item"><div><span class="card-category">@item.Category</span><h3>@item.Title</h3><p>@item.Question</p></div><a class="button button-secondary" href="@item.Href">Reprendre ↗</a><button class="remove-button" title="Retirer du carnet" @onclick="() => Remove(item.SavedId)">×</button></article>}</div>
+    <div class="notebook-list">@foreach(var item in _items){<article class="notebook-item"><div><span class="card-category">@item.Category</span><h3>@item.Title</h3><p>@item.Question</p>@if (!string.IsNullOrWhiteSpace(item.Note)){<p><strong>Mon hypothèse :</strong> <span>@item.Note</span></p>}</div><a class="button button-secondary" href="@item.Href">Reprendre ↗</a><button class="remove-button" title="Retirer du carnet" @onclick="() => Remove(item.SavedId)">×</button></article>}</div>
 }
 </section>
 @code {
     private const string PathMarker = "-path-";
-    private sealed record NotebookItem(string SavedId, string Category, string Title, string Question, string Href);
+    private sealed record NotebookItem(string SavedId, string Category, string Title, string Question, string Href, string Note = "");
     private List<NotebookItem> _items = new();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -22,7 +22,8 @@ else
         if (firstRender)
         {
             var ids = await JS.InvokeAsync<string[]>("lspGetSaved");
-            _items = ids.Select(ToItem).OfType<NotebookItem>().ToList();
+            var notes = await JS.InvokeAsync<Dictionary<string, string>>("lspGetNotes");
+            _items = ids.Select(ToItem).OfType<NotebookItem>().Select(i => i with { Note = notes.GetValueOrDefault(i.SavedId, "") }).ToList();
             StateHasChanged();
         }
         await JS.InvokeVoidAsync("lspTranslateUi");
@@ -47,6 +48,7 @@ else
     private async Task Remove(string savedId)
     {
         await JS.InvokeVoidAsync("lspSave", savedId, false);
+        await JS.InvokeVoidAsync("lspSetNote", savedId, "");
         _items.RemoveAll(x => x.SavedId == savedId);
     }
 }

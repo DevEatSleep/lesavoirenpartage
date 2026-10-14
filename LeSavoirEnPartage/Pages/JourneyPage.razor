@@ -35,10 +35,10 @@ else
     private Journey? _journey;
     private bool _saved, _learning, _showNext;
     private string _hypothesis = "";
-    protected override async Task OnParametersSetAsync() { _journey = Journeys.Find(Id); if (_journey is not null) _saved = await JS.InvokeAsync<bool>("lspIsSaved", Id); }
+    protected override async Task OnParametersSetAsync() { _journey = Journeys.Find(Id); if (_journey is not null) { _saved = await JS.InvokeAsync<bool>("lspIsSaved", Id); _hypothesis = await JS.InvokeAsync<string>("lspGetNote", Id); } }
     private async Task ToggleSaved() { if (_journey is null) return; _saved = !_saved; await JS.InvokeVoidAsync("lspSave", Id, _saved); }
     private void StartLearning() { _learning = true; _showNext = false; }
-    private void ContinueLearning() { _showNext = true; }
+    private async Task ContinueLearning() { _showNext = true; await JS.InvokeVoidAsync("lspSetNote", Id, _hypothesis); }
     private void ExplorePath(int index) { if (_journey is null) return; Nav.NavigateTo($"/parcours/{_journey.Id}/{index}"); }
     private string LocalizedUrl() => _journey?.WikipediaUrl ?? "https://www.wikipedia.org/";
 }

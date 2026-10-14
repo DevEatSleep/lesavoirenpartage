@@ -22,8 +22,9 @@ else { <section class="empty-state"><h1>Cette piste n’existe pas encore.</h1><
     private string FactText => HasFact ? _journey!.PathFacts[Index] : "";
     private string FactSourceName => HasFact ? _journey!.PathFactSourceNames[Index] : "";
     private string FactSourceUrl => HasFact ? _journey!.PathFactSourceUrls[Index] : "https://www.wikipedia.org/";
-    private void Reveal() => _revealed = true;
-    protected override async Task OnParametersSetAsync() { _hypothesis = ""; _revealed = false; _journey = Journeys.Find(Id); _saved = await JS.InvokeAsync<bool>("lspIsSaved", $"{Id}-path-{Index}"); _language = await JS.InvokeAsync<string>("lspGetLanguage"); }
+    private string NoteId => $"{Id}-path-{Index}";
+    private async Task Reveal() { _revealed = true; await JS.InvokeVoidAsync("lspSetNote", NoteId, _hypothesis); }
+    protected override async Task OnParametersSetAsync() { _revealed = false; _journey = Journeys.Find(Id); _hypothesis = await JS.InvokeAsync<string>("lspGetNote", NoteId); _saved = await JS.InvokeAsync<bool>("lspIsSaved", $"{Id}-path-{Index}"); _language = await JS.InvokeAsync<string>("lspGetLanguage"); }
     private async Task SavePath() { _saved = !_saved; await JS.InvokeVoidAsync("lspSave", $"{Id}-path-{Index}", _saved); }
     private string PathSourceUrlForFrench() => PathSourceUrlFor("fr");
     private string PathSourceUrlForEnglish() => PathSourceUrlFor("en");

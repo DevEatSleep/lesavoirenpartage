@@ -9,11 +9,44 @@
 }
 else
 {
-    <div class="notebook-list">@foreach(var item in _items){<article class="notebook-item"><div><span class="card-category">@item.Category</span><h3>@item.Title</h3><p>@item.Question</p></div><a class="button button-secondary" href="/voyage/@item.Id">Reprendre ↗</a><button class="remove-button" title="Retirer du carnet" @onclick="() => Remove(item.Id)">×</button></article>}</div>
+    <div class="notebook-list">@foreach(var item in _items){<article class="notebook-item"><div><span class="card-category">@item.Category</span><h3>@item.Title</h3><p>@item.Question</p></div><a class="button button-secondary" href="@item.Href">Reprendre ↗</a><button class="remove-button" title="Retirer du carnet" @onclick="() => Remove(item.SavedId)">×</button></article>}</div>
 }
 </section>
 @code {
-    private List<Journey> _items = new();
-    protected override async Task OnAfterRenderAsync(bool firstRender) { if (firstRender) { var ids = await JS.InvokeAsync<string[]>("lspGetSaved"); _items = ids.Select(Journeys.Find).Where(j => j is not null).Cast<Journey>().ToList(); StateHasChanged(); } await JS.InvokeVoidAsync("lspTranslateUi"); }
-    private async Task Remove(string id) { await JS.InvokeVoidAsync("lspSave", id, false); _items.RemoveAll(x => x.Id == id); }
+    private const string PathMarker = "-path-";
+    private sealed record NotebookItem(string SavedId, string Category, string Title, string Question, string Href);
+    private List<NotebookItem> _items = new();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var ids = await JS.InvokeAsync<string[]>("lspGetSaved");
+            _items = ids.Select(ToItem).OfType<NotebookItem>().ToList();
+            StateHasChanged();
+        }
+        await JS.InvokeVoidAsync("lspTranslateUi");
+    }
+
+    private NotebookItem? ToItem(string savedId)
+    {
+        var markerAt = savedId.IndexOf(PathMarker, StringComparison.Ordinal);
+        if (markerAt < 0)
+        {
+            var journey = Journeys.Find(savedId);
+            return journey is null ? null : new NotebookItem(savedId, journey.Category, journey.Title, journey.Question, $"/voyage/{journey.Id}");
+        }
+
+        var journeyId = savedId[..markerAt];
+        var journeyOfPath = Journeys.Find(journeyId);
+        if (journeyOfPath is null || !int.TryParse(savedId[(markerAt + PathMarker.Length)..], out var index)) return null;
+        if (index < 0 || index >= journeyOfPath.Paths.Length || index >= journeyOfPath.PathQuestions.Length) return null;
+        return new NotebookItem(savedId, journeyOfPath.Title, journeyOfPath.Paths[index], journeyOfPath.PathQuestions[index], $"/parcours/{journeyOfPath.Id}/{index}");
+    }
+
+    private async Task Remove(string savedId)
+    {
+        await JS.InvokeVoidAsync("lspSave", savedId, false);
+        _items.RemoveAll(x => x.SavedId == savedId);
+    }
 }

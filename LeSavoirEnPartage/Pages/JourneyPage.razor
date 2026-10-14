@@ -5,12 +5,12 @@
 <PageTitle>@(_journey?.Title ?? "Voyage") — Le Savoir en partage</PageTitle>
 @if (_journey is null)
 {
-    <section class="empty-state"><h1>Ce chemin reste à découvrir.</h1><a href="/">Retour à l’exploration</a></section>
+    <section class="empty-state"><h1>Ce chemin reste à découvrir.</h1><a href="./">Retour à l’exploration</a></section>
 }
 else
 {
     <section class="journey-detail">
-        <a class="back-link" href="/">← Tous les voyages</a>
+        <a class="back-link" href="./">← Tous les voyages</a>
         <div class="detail-kicker"><span class="card-icon">@_journey.Icon</span><span>@_journey.Category</span><span class="source-chip">Sources documentaires</span></div>
         <h1>@_journey.Title</h1><p class="detail-question">@_journey.Question</p><p class="detail-description">@_journey.Description</p>
         <div class="detail-actions"><button class="button button-primary" @onclick="StartLearning">Lancer la découverte <span>↗</span></button><button class="button button-secondary" @onclick="ToggleSaved">@(_saved ? "✓ Dans mon carnet" : "+ Garder dans mon carnet")</button></div>
@@ -39,6 +39,6 @@ else
     private async Task ToggleSaved() { if (_journey is null) return; _saved = !_saved; await JS.InvokeVoidAsync("lspSave", Id, _saved); }
     private void StartLearning() { _learning = true; _showNext = false; }
     private async Task ContinueLearning() { _showNext = true; await JS.InvokeVoidAsync("lspSetNote", Id, _hypothesis); }
-    private void ExplorePath(int index) { if (_journey is null) return; Nav.NavigateTo($"/parcours/{_journey.Id}/{index}"); }
+    private void ExplorePath(int index) { if (_journey is null) return; Nav.NavigateTo($"parcours/{_journey.Id}/{index}"); }
     private string LocalizedUrl() => _journey?.WikipediaUrl ?? "https://www.wikipedia.org/";
 }

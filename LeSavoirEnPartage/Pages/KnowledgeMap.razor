@@ -3,7 +3,7 @@
 @inject IJSRuntime JS
 <PageTitle>Carte des découvertes — Le Voyageur du savoir</PageTitle>
 <section class="knowledge-map-page fun-map-page">
-    <a class="back-link" href="/">← Retour aux univers</a>
+    <a class="back-link" href="./">← Retour aux univers</a>
     <div class="map-heading"><div><div class="eyebrow">TA CURIOSITÉ TRACE LA ROUTE</div><h1>La carte des découvertes</h1><p>Choisis un univers, ajoute-le à ton itinéraire, puis suis les liens vers une nouvelle surprise.</p></div><span class="map-count">@MapCountLabel</span></div>
     <div class="map-legend"><span><i class="legend-dot legend-main"></i>Univers à explorer</span><span class="map-hint">↗ Touche un cercle pour en savoir plus</span></div>
     <div class="knowledge-map-shell"><svg class="knowledge-map-svg" viewBox="0 0 900 570" role="img" aria-label="Carte interactive des huit univers de découverte">
@@ -24,7 +24,7 @@
     private MapNode? Selected=>Nodes.FirstOrDefault(n=>n.Id==SelectedId);
     protected override async Task OnAfterRenderAsync(bool firstRender){if(firstRender){_journeyNodeIds=(await JS.InvokeAsync<string[]>("lspGetJourneyNodes")).Where(id=>Nodes.Any(n=>n.Id==id)).ToList();StateHasChanged();} await JS.InvokeVoidAsync("lspTranslateUi");}
     private void SelectNode(string id)=>SelectedId=id;
-    private void OpenJourney(string id)=>Nav.NavigateTo($"/voyage/{id}");
+    private void OpenJourney(string id)=>Nav.NavigateTo($"voyage/{id}");
     private void HandleKey(KeyboardEventArgs e,string id){if(e.Key is "Enter" or " ")SelectNode(id);}
     private string MapCountLabel => $"{Nodes.Count} univers · {Links.Count} connexions";
     private IEnumerable<MapNode> ConnectedNodes(string id)=>Links.Where(l=>l.From==id||l.To==id).Select(l=>Nodes.First(n=>n.Id==(l.From==id?l.To:l.From))).DistinctBy(n=>n.Id);

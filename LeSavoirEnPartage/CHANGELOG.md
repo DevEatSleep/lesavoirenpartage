@@ -1,5 +1,10 @@
 # Historique des versions
 
+## Non publié (déploiement)
+
+- Déploiement sur GitHub Pages via GitHub Actions (`.github/workflows/deploy-pages.yml`) : publication .NET, base href adapté au sous-chemin du dépôt, `404.html` pour les routes Blazor, `.nojekyll`.
+- Tous les liens internes, la navigation, le manifeste et l’enregistrement du service worker sont relatifs au `<base href>` (ils pointaient vers la racine du domaine et auraient été cassés sous `/lesavoirenpartage/`).
+
 ## Non publié (liens)
 
 - Liens génériques remplacés par des articles précis, vérifiés dans les trois langues : « Culture populaire » (au lieu de « Cinéma »), « Patrimoine culturel immatériel » (au lieu de « Culture »), « Post-it » (au lieu de « Innovation »).

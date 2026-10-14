@@ -18,4 +18,7 @@ public sealed class Journey
     public required string[] PathSourceUrls { get; init; }
     public required string[] PathSourceUrlsEnglish { get; init; }
     public required string[] PathSourceUrlsSpanish { get; init; }
+    public required string[] PathFacts { get; init; }
+    public required string[] PathFactSourceNames { get; init; }
+    public required string[] PathFactSourceUrls { get; init; }
 }

@@ -1,5 +1,14 @@
 # Historique des versions
 
+## Non publié (suite)
+
+- L’hypothèse saisie sur une page d’univers ou de piste est enregistrée dans le navigateur, préremplie à la visite suivante, et affichée dans le carnet sous l’entrée correspondante. Retirer une entrée du carnet efface aussi son hypothèse.
+- Données stockées localement (clé `lsp-notes-v1`), jamais envoyées : 2 000 caractères maximum par hypothèse.
+
+### Vérifications
+
+- Fonctions de stockage testées sous Node avec un `localStorage` simulé. La compilation .NET et le test navigateur restent à effectuer.
+
 ## Non publié
 
 - Chaque mini-enquête affiche maintenant une réponse courte et sourcée (32 au total), révélée après la saisie d’une hypothèse. Chaque fait renvoie à l’article précis qui l’appuie.

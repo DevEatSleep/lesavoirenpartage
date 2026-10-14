@@ -1,5 +1,9 @@
 # Historique des versions
 
+## Non publié (confiance)
+
+- Le curseur de confiance est remplacé par trois boutons obligatoires : « Je devine » (60 %), « Plutôt sûr » (80 %), « Certain » (100 %). Le bouton « Parier » reste inactif tant que la réponse (Vrai/Faux) et le niveau de confiance ne sont pas choisis. Les paris déjà enregistrés restent valides.
+
 ## Non publié (pari de confiance)
 
 - Nouveau mécanisme sur chaque piste : une affirmation vraie ou fausse, un curseur de confiance (50-100 %), puis la réponse sourcée. 32 affirmations (15 vraies, 17 fausses), une par enquête, tirées des faits déjà vérifiés.

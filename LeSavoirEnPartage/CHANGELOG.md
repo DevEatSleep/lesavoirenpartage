@@ -1,5 +1,15 @@
 # Historique des versions
 
+## Non publié (carte)
+
+- Carte des découvertes : le compteur est calculé à partir des données (8 univers · 13 connexions) au lieu d’afficher « 8 connexions » en dur pour 14 liens.
+- Lien en double supprimé (« Vrai ou faux » → « Mystères » existait déjà dans l’autre sens).
+- Nœud « Relations » déplacé : il était posé exactement sur la ligne Mystères–Vrai ou faux, et la ligne Relations–Voyages passait au centre de « Vrai ou faux ». Plus aucun lien ne traverse un autre nœud (distance minimale de 10 px au bord des cercles, vérifiée par script).
+
+### Vérifications
+
+- Géométrie contrôlée par script sur les coordonnées du fichier. La compilation .NET et le test navigateur restent à effectuer.
+
 ## Non publié (suite)
 
 - L’hypothèse saisie sur une page d’univers ou de piste est enregistrée dans le navigateur, préremplie à la visite suivante, et affichée dans le carnet sous l’entrée correspondante. Retirer une entrée du carnet efface aussi son hypothèse.

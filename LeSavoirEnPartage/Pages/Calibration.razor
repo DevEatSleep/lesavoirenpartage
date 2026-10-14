@@ -1,0 +1,116 @@
+@page "/etalonnage"
+@inject JourneyService Journeys
+@inject IJSRuntime JS
+<PageTitle>Mon étalonnage — Le Savoir en partage</PageTitle>
+<section class="notebook-page calibration-page">
+    <a class="back-link" href="./">← Explorer</a>
+    <div class="eyebrow">MES PARIS</div>
+    <h1>Es-tu aussi sûr que tu as raison ?</h1>
+    <p class="detail-description">Être bien calibré, c’est avoir raison 8 fois sur 10 quand on se dit sûr à 80 %. Ce tableau compare ta confiance et tes résultats réels.</p>
+    @if (_loaded && _all.Count == 0)
+    {
+        <div class="empty-notebook"><span>▤</span><p>Aucun pari pour l’instant. Choisis une piste et parie sur une affirmation.</p><a class="button button-primary" href="./">Jouer une piste ↗</a></div>
+    }
+    else if (_loaded)
+    {
+        <div class="calibration-total">
+            <div class="stat"><span>Paris joués</span><strong>@_total.Count</strong></div>
+            <div class="stat"><span>Réussite réelle</span><strong>@Percent(_total.HitRate)</strong></div>
+            <div class="stat"><span>Confiance moyenne</span><strong>@Percent(_total.AverageConfidence)</strong></div>
+        </div>
+        <p class="calibration-verdict">@VerdictBlock(_total.Verdict)</p>
+
+        <h2>Par univers</h2>
+        <div class="calibration-universes">
+            @foreach (var row in _rows)
+            {
+                <article class="calibration-row" @key="row.Id">
+                    <h3>@row.Title</h3>
+                    <div class="calibration-bars" aria-hidden="true">
+                        <div class="bar bar-hit" style="width:@Width(row.Stats.HitRate)"></div>
+                        <div class="bar bar-confidence" style="width:@Width(row.Stats.AverageConfidence)"></div>
+                    </div>
+                    <div class="calibration-numbers"><span>Réussite réelle</span><strong>@Percent(row.Stats.HitRate)</strong><span>Confiance moyenne</span><strong>@Percent(row.Stats.AverageConfidence)</strong></div>
+                    <p>@VerdictBlock(row.Stats.Verdict)</p>
+                </article>
+            }
+        </div>
+
+        <h2>Tes erreurs les plus sûres de toi</h2>
+        @if (_mistakes.Count == 0)
+        {
+            <p class="detail-description">Aucun pari raté avec une confiance d’au moins 80 %.</p>
+        }
+        else
+        {
+            <p class="detail-description">Ce sont les plus instructives : retente ces pistes plus tard.</p>
+            <div class="notebook-list">
+                @foreach (var m in _mistakes)
+                {
+                    <article class="notebook-item" @key="m.Id"><div><span class="card-category">@m.Category</span><h3>@m.Title</h3><p>@m.Claim</p><p class="bet-confidence">@($"{m.Confidence} %")</p></div><a class="button button-secondary" href="@m.Href">Reprendre ↗</a></article>
+                }
+            </div>
+        }
+    }
+</section>
+@code {
+    private sealed record UniverseRow(string Id, string Title, CalibrationStats Stats);
+    private sealed record Mistake(string Id, string Category, string Title, string Claim, int Confidence, string Href);
+    private bool _loaded;
+    private List<Bet> _all = new();
+    private CalibrationStats _total = CalibrationStats.From(Array.Empty<Bet>());
+    private List<UniverseRow> _rows = new();
+    private List<Mistake> _mistakes = new();
+    private const string PathMarker = "-path-";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var bets = await JS.InvokeAsync<Dictionary<string, Bet>>("lspGetBets");
+            Build(bets);
+            _loaded = true;
+            StateHasChanged();
+        }
+        await JS.InvokeVoidAsync("lspTranslateUi");
+    }
+
+    private void Build(Dictionary<string, Bet> bets)
+    {
+        var perUniverse = new Dictionary<string, List<Bet>>();
+        var mistakes = new List<Mistake>();
+        foreach (var (savedId, bet) in bets)
+        {
+            var at = savedId.IndexOf(PathMarker, StringComparison.Ordinal);
+            if (at < 0 || !int.TryParse(savedId[(at + PathMarker.Length)..], out var index)) continue;
+            var journey = Journeys.Find(savedId[..at]);
+            if (journey is null || index < 0 || index >= journey.Paths.Length || index >= journey.PathClaims.Length) continue;
+            bet.Confidence = Math.Clamp(bet.Confidence, 50, 100);
+            _all.Add(bet);
+            if (!perUniverse.TryGetValue(journey.Id, out var list)) perUniverse[journey.Id] = list = new List<Bet>();
+            list.Add(bet);
+            if (!bet.Correct && bet.Confidence >= 80)
+                mistakes.Add(new Mistake(savedId, journey.Title, journey.Paths[index], journey.PathClaims[index], bet.Confidence, $"parcours/{journey.Id}/{index}"));
+        }
+        _total = CalibrationStats.From(_all);
+        _rows = Journeys.All.Where(j => perUniverse.ContainsKey(j.Id)).Select(j => new UniverseRow(j.Id, j.Title, CalibrationStats.From(perUniverse[j.Id]))).ToList();
+        _mistakes = mistakes.OrderByDescending(m => m.Confidence).ToList();
+    }
+
+    private static string Percent(double value) => $"{Math.Round(value * 100)} %";
+    private static string Width(double value) => $"{Math.Round(value * 100)}%";
+
+    private RenderFragment VerdictBlock(CalibrationVerdict verdict) => builder =>
+    {
+        builder.OpenElement(0, "span");
+        builder.SetKey(verdict);
+        builder.AddContent(1, verdict switch
+        {
+            CalibrationVerdict.Overconfident => "Tu es plutôt trop sûr de toi.",
+            CalibrationVerdict.Underconfident => "Tu es plutôt trop prudent.",
+            CalibrationVerdict.WellCalibrated => "Tu es bien calibré.",
+            _ => "Pas encore assez de paris : il en faut au moins 3."
+        });
+        builder.CloseElement();
+    };
+}

@@ -21,4 +21,6 @@ public sealed class Journey
     public required string[] PathFacts { get; init; }
     public required string[] PathFactSourceNames { get; init; }
     public required string[] PathFactSourceUrls { get; init; }
+    public required string[] PathClaims { get; init; }
+    public required bool[] PathClaimTruths { get; init; }
 }

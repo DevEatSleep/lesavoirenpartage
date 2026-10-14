@@ -3,7 +3,8 @@
 ## Non publié
 
 - Chaque mini-enquête affiche maintenant une réponse courte et sourcée (32 au total), révélée après la saisie d’une hypothèse. Chaque fait renvoie à l’article précis qui l’appuie.
-- Les textes de réponse sont en français uniquement ; la traduction anglais/espagnol reste à faire.
+- Les 32 réponses, les noms de sources et les libellés de la nouvelle section sont traduits en anglais et en espagnol, avec le même mécanisme que le reste de l’interface (dictionnaire dans `wwwroot/js/app.js`). Les liens de source restent ceux des articles français ou anglais cités ; le nom du lien précise la langue de l’article.
+- Cache PWA passé en `lsp-v1.2` pour que le nouveau dictionnaire soit pris en compte à la mise à jour.
 - Le carnet affiche les pistes enregistrées (voir le correctif précédent).
 
 ### Vérifications

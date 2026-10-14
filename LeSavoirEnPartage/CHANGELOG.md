@@ -1,5 +1,10 @@
 # Historique des versions
 
+## Non publié (liens)
+
+- Liens génériques remplacés par des articles précis, vérifiés dans les trois langues : « Culture populaire » (au lieu de « Cinéma »), « Patrimoine culturel immatériel » (au lieu de « Culture »), « Post-it » (au lieu de « Innovation »).
+- Liens cassés corrigés : « Fête traditionnelle » (fr, inexistant) → « Fête » ; « Cine biográfico » (es) → « Película biográfica » ; « Ciencia elástica » (es, faute de frappe) → « Ciencia ficción ».
+
 ## Non publié (carte)
 
 - Carte des découvertes : le compteur est calculé à partir des données (8 univers · 13 connexions) au lieu d’afficher « 8 connexions » en dur pour 14 liens.

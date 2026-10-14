@@ -1,5 +1,12 @@
 # Historique des versions
 
+## Non publié (pari de confiance)
+
+- Nouveau mécanisme sur chaque piste : une affirmation vraie ou fausse, un curseur de confiance (50-100 %), puis la réponse sourcée. 32 affirmations (15 vraies, 17 fausses), une par enquête, tirées des faits déjà vérifiés.
+- Nouvelle page « Mon étalonnage » (`/etalonnage`) : paris joués, réussite réelle, confiance moyenne, verdict (trop sûr de toi / trop prudent / bien calibré, à partir de 3 paris), détail par univers et liste des erreurs commises avec au moins 80 % de confiance.
+- Les paris sont enregistrés localement (`lsp-bets-v1`) ; l’hypothèse devient une justification facultative, toujours reprise dans le carnet. « Rejouer cette piste » efface le pari.
+- Le workflow compile aussi les pull requests (sans déployer) pour détecter les erreurs avant la fusion.
+
 ## Non publié (déploiement)
 
 - Déploiement sur GitHub Pages via GitHub Actions (`.github/workflows/deploy-pages.yml`) : publication .NET, base href adapté au sous-chemin du dépôt, `404.html` pour les routes Blazor, `.nojekyll`.

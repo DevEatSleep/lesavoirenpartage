@@ -2,7 +2,7 @@
 @inject IJSRuntime JS
 <PageTitle>Sources, crédits et licences — Le Savoir en partage</PageTitle>
 <section class="journey-detail sources-page">
-    <a class="back-link" href="/">← Retour aux univers</a>
+    <a class="back-link" href="./">← Retour aux univers</a>
     <div class="eyebrow">TRANSPARENCE & ESPRIT CRITIQUE</div>
     <h1>Sources, crédits et licences</h1>
     <p class="detail-description">Le Voyageur du savoir veut donner envie d’apprendre, pas remplacer les sources. Les liens Wikipédia ouvrent les articles originaux dans la langue choisie ; les ressources complémentaires aident à recouper les informations.</p>
@@ -11,7 +11,7 @@
     <div class="source-panel"><div class="source-panel-icon">©</div><div><strong>Réutilisation et attribution</strong><p>Dans cette version, l’application renvoie vers Wikipédia au lieu de recopier ses articles. Les textes de Wikipédia sont généralement disponibles sous licence Creative Commons Attribution – Partage dans les mêmes conditions (CC BY-SA), avec des conditions d’attribution et de partage à respecter en cas de réutilisation. Les images et médias peuvent avoir des licences différentes : vérifier leur page de description. Les textes originaux de l’application ne sont pas présentés comme des extraits de Wikipédia.</p><a href="https://en.wikipedia.org/wiki/Wikipedia:Reusing_Wikipedia_content" target="_blank" rel="noopener noreferrer">Lire les règles officielles de réutilisation ↗</a></div></div>
     <div class="source-panel"><div class="source-panel-icon">✓</div><div><strong>Comment vérifier une information ?</strong><ul><li>Ouvre les références citées dans l’article, pas seulement son introduction.</li><li>Vérifie la date, l’auteur ou l’organisme éditeur et la méthode utilisée.</li><li>Pour une question scientifique ou médicale, privilégie les revues scientifiques, les organismes publics et les institutions reconnues.</li><li>Si les sources se contredisent, présente le désaccord et le niveau d’incertitude plutôt que de trancher sans preuve.</li></ul></div></div>
     <div class="source-panel"><div class="source-panel-icon">♥</div><div><strong>Wikipédia est utile ? Soutiens-le si tu le souhaites.</strong><p>Le don est facultatif et s’effectue directement sur le site officiel de la Wikimedia Foundation. Le Voyageur du savoir ne collecte ni ne traite aucun paiement.</p><a class="button button-secondary donate-button" href="https://donate.wikimedia.org/" target="_blank" rel="noopener noreferrer">Faire un don à Wikipédia ↗</a></div></div>
-    <p class="detail-description"><a href="/apropos">À propos du projet et indépendance vis-à-vis de Wikimedia ↗</a></p>
+    <p class="detail-description"><a href="apropos">À propos du projet et indépendance vis-à-vis de Wikimedia ↗</a></p>
 </section>
 
 @code { protected override async Task OnAfterRenderAsync(bool firstRender) { await JS.InvokeVoidAsync("lspTranslateUi"); } }

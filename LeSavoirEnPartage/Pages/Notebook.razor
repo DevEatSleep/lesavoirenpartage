@@ -2,10 +2,10 @@
 @inject JourneyService Journeys
 @inject IJSRuntime JS
 <PageTitle>Mon carnet — Le Savoir en partage</PageTitle>
-<section class="notebook-page"><a class="back-link" href="/">← Explorer</a><div class="eyebrow">MES DÉCOUVERTES</div><h1>Mon carnet de voyage.</h1><p class="detail-description">Les idées que tu choisis de garder, les pistes que tu veux retrouver.</p>
+<section class="notebook-page"><a class="back-link" href="./">← Explorer</a><div class="eyebrow">MES DÉCOUVERTES</div><h1>Mon carnet de voyage.</h1><p class="detail-description">Les idées que tu choisis de garder, les pistes que tu veux retrouver.</p>
 @if (_items.Count == 0)
 {
-    <div class="empty-notebook"><span>▤</span><h2>Ton carnet commence ici.</h2><p>Explore un sujet et enregistre les découvertes que tu souhaites approfondir.</p><a class="button button-primary" href="/">Trouver un premier voyage ↗</a></div>
+    <div class="empty-notebook"><span>▤</span><h2>Ton carnet commence ici.</h2><p>Explore un sujet et enregistre les découvertes que tu souhaites approfondir.</p><a class="button button-primary" href="./">Trouver un premier voyage ↗</a></div>
 }
 else
 {
@@ -35,14 +35,14 @@ else
         if (markerAt < 0)
         {
             var journey = Journeys.Find(savedId);
-            return journey is null ? null : new NotebookItem(savedId, journey.Category, journey.Title, journey.Question, $"/voyage/{journey.Id}");
+            return journey is null ? null : new NotebookItem(savedId, journey.Category, journey.Title, journey.Question, $"voyage/{journey.Id}");
         }
 
         var journeyId = savedId[..markerAt];
         var journeyOfPath = Journeys.Find(journeyId);
         if (journeyOfPath is null || !int.TryParse(savedId[(markerAt + PathMarker.Length)..], out var index)) return null;
         if (index < 0 || index >= journeyOfPath.Paths.Length || index >= journeyOfPath.PathQuestions.Length) return null;
-        return new NotebookItem(savedId, journeyOfPath.Title, journeyOfPath.Paths[index], journeyOfPath.PathQuestions[index], $"/parcours/{journeyOfPath.Id}/{index}");
+        return new NotebookItem(savedId, journeyOfPath.Title, journeyOfPath.Paths[index], journeyOfPath.PathQuestions[index], $"parcours/{journeyOfPath.Id}/{index}");
     }
 
     private async Task Remove(string savedId)

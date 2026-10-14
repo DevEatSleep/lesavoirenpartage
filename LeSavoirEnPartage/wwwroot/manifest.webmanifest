@@ -1,8 +1,8 @@
 {
   "name": "Le Savoir en partage — Le Voyageur du savoir",
   "short_name": "Voyageur du savoir",
-  "start_url": "/",
-  "scope": "/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#f8f7f3",
   "theme_color": "#152a42",
